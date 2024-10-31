@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.KaoshiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.kaoshi_uuid_number as kaoshiUuidNumber
+        ,a.kaoshi_name as kaoshiName
+        ,a.kaoshi_quyu as kaoshiQuyu
+        ,a.kaoshi_types as kaoshiTypes
+        ,a.kaoshi_renshu as kaoshiRenshu
+        ,a.kaoshi_time as kaoshiTime
+        ,a.kaoshi_content as kaoshiContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.KaoshiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM kaoshi  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.kaoshiUuidNumber != '' and params.kaoshiUuidNumber != null and params.kaoshiUuidNumber != 'null' ">
+                and a.kaoshi_uuid_number like CONCAT('%',#{params.kaoshiUuidNumber},'%')
+            </if>
+            <if test=" params.kaoshiName != '' and params.kaoshiName != null and params.kaoshiName != 'null' ">
+                and a.kaoshi_name like CONCAT('%',#{params.kaoshiName},'%')
+            </if>
+            <if test=" params.kaoshiQuyu != '' and params.kaoshiQuyu != null and params.kaoshiQuyu != 'null' ">
+                and a.kaoshi_quyu like CONCAT('%',#{params.kaoshiQuyu},'%')
+            </if>
+            <if test="params.kaoshiTypes != null and params.kaoshiTypes != ''">
+                and a.kaoshi_types = #{params.kaoshiTypes}
+            </if>
+            <if test="params.kaoshiRenshuStart != null and params.kaoshiRenshuStart != ''">
+                <![CDATA[  and a.kaoshi_renshu >= #{params.kaoshiRenshuStart}   ]]>
+            </if>
+            <if test="params.kaoshiRenshuEnd != null and params.kaoshiRenshuEnd != ''">
+                <![CDATA[  and a.kaoshi_renshu <= #{params.kaoshiRenshuEnd}   ]]>
+            </if>
+             <if test="params.kaoshiRenshu != null and params.kaoshiRenshu != ''">
+                and a.kaoshi_renshu = #{params.kaoshiRenshu}
+             </if>
+            <if test=" params.kaoshiTimeStart != '' and params.kaoshiTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.kaoshi_time) >= UNIX_TIMESTAMP(#{params.kaoshiTimeStart}) ]]>
+            </if>
+            <if test=" params.kaoshiTimeEnd != '' and params.kaoshiTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.kaoshi_time) <= UNIX_TIMESTAMP(#{params.kaoshiTimeEnd}) ]]>
+            </if>
+            <if test=" params.kaoshiContent != '' and params.kaoshiContent != null and params.kaoshiContent != 'null' ">
+                and a.kaoshi_content like CONCAT('%',#{params.kaoshiContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

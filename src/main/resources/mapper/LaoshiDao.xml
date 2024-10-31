@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.LaoshiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.username as username
+        ,a.password as password
+        ,a.laoshi_uuid_number as laoshiUuidNumber
+        ,a.laoshi_name as laoshiName
+        ,a.laoshi_phone as laoshiPhone
+        ,a.laoshi_id_number as laoshiIdNumber
+        ,a.laoshi_photo as laoshiPhoto
+        ,a.sex_types as sexTypes
+        ,a.yuanbu_types as yuanbuTypes
+        ,a.laoshi_email as laoshiEmail
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.LaoshiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM laoshi  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and a.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and a.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test=" params.laoshiUuidNumber != '' and params.laoshiUuidNumber != null and params.laoshiUuidNumber != 'null' ">
+                and a.laoshi_uuid_number like CONCAT('%',#{params.laoshiUuidNumber},'%')
+            </if>
+            <if test=" params.laoshiName != '' and params.laoshiName != null and params.laoshiName != 'null' ">
+                and a.laoshi_name like CONCAT('%',#{params.laoshiName},'%')
+            </if>
+            <if test=" params.laoshiPhone != '' and params.laoshiPhone != null and params.laoshiPhone != 'null' ">
+                and a.laoshi_phone like CONCAT('%',#{params.laoshiPhone},'%')
+            </if>
+            <if test=" params.laoshiIdNumber != '' and params.laoshiIdNumber != null and params.laoshiIdNumber != 'null' ">
+                and a.laoshi_id_number like CONCAT('%',#{params.laoshiIdNumber},'%')
+            </if>
+            <if test="params.sexTypes != null and params.sexTypes != ''">
+                and a.sex_types = #{params.sexTypes}
+            </if>
+            <if test="params.yuanbuTypes != null and params.yuanbuTypes != ''">
+                and a.yuanbu_types = #{params.yuanbuTypes}
+            </if>
+            <if test=" params.laoshiEmail != '' and params.laoshiEmail != null and params.laoshiEmail != 'null' ">
+                and a.laoshi_email like CONCAT('%',#{params.laoshiEmail},'%')
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.BanjiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.banji_uuid_number as banjiUuidNumber
+        ,a.banji_loudong as banjiLoudong
+        ,a.banji_louceng as banjiLouceng
+        ,a.banji_name as banjiName
+        ,a.banji_content as banjiContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.BanjiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM banji  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.banjiUuidNumber != '' and params.banjiUuidNumber != null and params.banjiUuidNumber != 'null' ">
+                and a.banji_uuid_number like CONCAT('%',#{params.banjiUuidNumber},'%')
+            </if>
+            <if test=" params.banjiLoudong != '' and params.banjiLoudong != null and params.banjiLoudong != 'null' ">
+                and a.banji_loudong like CONCAT('%',#{params.banjiLoudong},'%')
+            </if>
+            <if test=" params.banjiLouceng != '' and params.banjiLouceng != null and params.banjiLouceng != 'null' ">
+                and a.banji_louceng like CONCAT('%',#{params.banjiLouceng},'%')
+            </if>
+            <if test=" params.banjiName != '' and params.banjiName != null and params.banjiName != 'null' ">
+                and a.banji_name like CONCAT('%',#{params.banjiName},'%')
+            </if>
+            <if test=" params.banjiContent != '' and params.banjiContent != null and params.banjiContent != 'null' ">
+                and a.banji_content like CONCAT('%',#{params.banjiContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

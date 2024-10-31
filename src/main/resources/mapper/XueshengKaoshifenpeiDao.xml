@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.XueshengKaoshifenpeiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.kaoshi_id as kaoshiId
+        ,a.banji_id as banjiId
+        ,a.xuesheng_id as xueshengId
+        ,a.xuesheng_kaoshifenpei_name as xueshengKaoshifenpeiName
+        ,a.xuesheng_kaoshifenpei_content as xueshengKaoshifenpeiContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.XueshengKaoshifenpeiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,banji.banji_uuid_number as banjiUuidNumber
+        ,banji.banji_loudong as banjiLoudong
+        ,banji.banji_louceng as banjiLouceng
+        ,banji.banji_name as banjiName
+        ,banji.banji_content as banjiContent
+        ,kaoshi.kaoshi_uuid_number as kaoshiUuidNumber
+        ,kaoshi.kaoshi_name as kaoshiName
+        ,kaoshi.kaoshi_quyu as kaoshiQuyu
+        ,kaoshi.kaoshi_types as kaoshiTypes
+        ,kaoshi.kaoshi_renshu as kaoshiRenshu
+        ,kaoshi.kaoshi_time as kaoshiTime
+        ,kaoshi.kaoshi_content as kaoshiContent
+        ,xuesheng.xuesheng_uuid_number as xueshengUuidNumber
+        ,xuesheng.xuesheng_name as xueshengName
+        ,xuesheng.xuesheng_phone as xueshengPhone
+        ,xuesheng.xuesheng_id_number as xueshengIdNumber
+        ,xuesheng.xuesheng_photo as xueshengPhoto
+        ,xuesheng.xuesheng_email as xueshengEmail
+
+        FROM xuesheng_kaoshifenpei  a
+        left JOIN banji banji ON a.banji_id = banji.id
+        left JOIN kaoshi kaoshi ON a.kaoshi_id = kaoshi.id
+        left JOIN xuesheng xuesheng ON a.xuesheng_id = xuesheng.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.kaoshiId != null and params.kaoshiId != ''">
+                and (
+                    a.kaoshi_id = #{params.kaoshiId}
+                )
+            </if>
+            <if test="params.banjiId != null and params.banjiId != ''">
+                and (
+                    a.banji_id = #{params.banjiId}
+                )
+            </if>
+            <if test="params.xueshengId != null and params.xueshengId != ''">
+                and (
+                    a.xuesheng_id = #{params.xueshengId}
+                )
+            </if>
+            <if test=" params.xueshengKaoshifenpeiName != '' and params.xueshengKaoshifenpeiName != null and params.xueshengKaoshifenpeiName != 'null' ">
+                and a.xuesheng_kaoshifenpei_name like CONCAT('%',#{params.xueshengKaoshifenpeiName},'%')
+            </if>
+            <if test=" params.xueshengKaoshifenpeiContent != '' and params.xueshengKaoshifenpeiContent != null and params.xueshengKaoshifenpeiContent != 'null' ">
+                and a.xuesheng_kaoshifenpei_content like CONCAT('%',#{params.xueshengKaoshifenpeiContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断教室的id不为空 -->
+            <if test=" params.banjiIdNotNull != '' and params.banjiIdNotNull != null and params.banjiIdNotNull != 'null' ">
+                and a.banji_id IS NOT NULL
+            </if>
+            <if test=" params.banjiUuidNumber != '' and params.banjiUuidNumber != null and params.banjiUuidNumber != 'null' ">
+                and banji.banji_uuid_number like CONCAT('%',#{params.banjiUuidNumber},'%')
+            </if>
+            <if test=" params.banjiLoudong != '' and params.banjiLoudong != null and params.banjiLoudong != 'null' ">
+                and banji.banji_loudong like CONCAT('%',#{params.banjiLoudong},'%')
+            </if>
+            <if test=" params.banjiLouceng != '' and params.banjiLouceng != null and params.banjiLouceng != 'null' ">
+                and banji.banji_louceng like CONCAT('%',#{params.banjiLouceng},'%')
+            </if>
+            <if test=" params.banjiName != '' and params.banjiName != null and params.banjiName != 'null' ">
+                and banji.banji_name like CONCAT('%',#{params.banjiName},'%')
+            </if>
+            <if test=" params.banjiContent != '' and params.banjiContent != null and params.banjiContent != 'null' ">
+                and banji.banji_content like CONCAT('%',#{params.banjiContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(banji.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(banji.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+                <!-- 判断考试的id不为空 -->
+            <if test=" params.kaoshiIdNotNull != '' and params.kaoshiIdNotNull != null and params.kaoshiIdNotNull != 'null' ">
+                and a.kaoshi_id IS NOT NULL
+            </if>
+            <if test=" params.kaoshiUuidNumber != '' and params.kaoshiUuidNumber != null and params.kaoshiUuidNumber != 'null' ">
+                and kaoshi.kaoshi_uuid_number like CONCAT('%',#{params.kaoshiUuidNumber},'%')
+            </if>
+            <if test=" params.kaoshiName != '' and params.kaoshiName != null and params.kaoshiName != 'null' ">
+                and kaoshi.kaoshi_name like CONCAT('%',#{params.kaoshiName},'%')
+            </if>
+            <if test=" params.kaoshiQuyu != '' and params.kaoshiQuyu != null and params.kaoshiQuyu != 'null' ">
+                and kaoshi.kaoshi_quyu like CONCAT('%',#{params.kaoshiQuyu},'%')
+            </if>
+            <if test="params.kaoshiTypes != null  and params.kaoshiTypes != ''">
+                and kaoshi.kaoshi_types = #{params.kaoshiTypes}
+            </if>
+
+            <if test="params.kaoshiRenshuStart != null  and params.kaoshiRenshuStart != '' ">
+                <![CDATA[  and kaoshi.kaoshi_renshu >= #{params.kaoshiRenshuStart}   ]]>
+            </if>
+            <if test="params.kaoshiRenshuEnd != null  and params.kaoshiRenshuEnd != '' ">
+                <![CDATA[  and kaoshi.kaoshi_renshu <= #{params.kaoshiRenshuEnd}   ]]>
+            </if>
+            <if test="params.kaoshiRenshu != null  and params.kaoshiRenshu != '' ">
+                and kaoshi.kaoshi_renshu = #{params.kaoshiRenshu}
+            </if>
+            <if test=" params.kaoshiTimeStart != '' and params.kaoshiTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(kaoshi.kaoshi_time) >= UNIX_TIMESTAMP(#{params.kaoshiTimeStart}) ]]>
+            </if>
+            <if test=" params.kaoshiTimeEnd != '' and params.kaoshiTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(kaoshi.kaoshi_time) <= UNIX_TIMESTAMP(#{params.kaoshiTimeEnd}) ]]>
+            </if>
+            <if test=" params.kaoshiContent != '' and params.kaoshiContent != null and params.kaoshiContent != 'null' ">
+                and kaoshi.kaoshi_content like CONCAT('%',#{params.kaoshiContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(kaoshi.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(kaoshi.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+                <!-- 判断学生的id不为空 -->
+            <if test=" params.xueshengIdNotNull != '' and params.xueshengIdNotNull != null and params.xueshengIdNotNull != 'null' ">
+                and a.xuesheng_id IS NOT NULL
+            </if>
+            <if test=" params.xueshengUuidNumber != '' and params.xueshengUuidNumber != null and params.xueshengUuidNumber != 'null' ">
+                and xuesheng.xuesheng_uuid_number like CONCAT('%',#{params.xueshengUuidNumber},'%')
+            </if>
+            <if test=" params.xueshengName != '' and params.xueshengName != null and params.xueshengName != 'null' ">
+                and xuesheng.xuesheng_name like CONCAT('%',#{params.xueshengName},'%')
+            </if>
+            <if test=" params.xueshengPhone != '' and params.xueshengPhone != null and params.xueshengPhone != 'null' ">
+                and xuesheng.xuesheng_phone like CONCAT('%',#{params.xueshengPhone},'%')
+            </if>
+            <if test=" params.xueshengIdNumber != '' and params.xueshengIdNumber != null and params.xueshengIdNumber != 'null' ">
+                and xuesheng.xuesheng_id_number like CONCAT('%',#{params.xueshengIdNumber},'%')
+            </if>
+            <if test=" params.xueshengEmail != '' and params.xueshengEmail != null and params.xueshengEmail != 'null' ">
+                and xuesheng.xuesheng_email like CONCAT('%',#{params.xueshengEmail},'%')
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
